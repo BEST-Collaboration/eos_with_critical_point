@@ -99,12 +99,12 @@ int main(void)
 
 	/* Chi's from Lattice are imported and stored in a vector. */
 	printf("Storing Lattice Data... \n \n");
-	FILE *LatIn = fopen("Lattice_Data_5_821_dT1.dat","r");
+	FILE *LatIn = fopen("EOS_tables/Lattice_Data_5_821_dT1.dat","r");
 	if (LatIn == 0){
     	fprintf(stderr, "failed to open Lattice Data\n");
     	exit(1);
   	}
-  	FILE *Latout = fopen("Chis_Lat_5_821_dT1.dat","w");
+  	FILE *Latout = fopen("EOS_tables/Chis_Lat_5_821_dT1.dat","w");
 	for(i=5;fscanf(LatIn,"%lf %lf %lf %lf",&xIn1,&xIn2,&xIn3,&xIn4) !=EOF;i++){
     	Chi0LatVec[i] = xIn2*pow(i,4);
     	Chi2LatVec[i] = xIn3*pow(i,4);
@@ -466,7 +466,7 @@ int main(void)
 
   	/* Now, the smooth joining with the HRG pressure starts. Import HRG pressure and store. */
 	printf("\nImporting HRG Pressure \n");
-	FILE *FilePressHRG = fopen("Press_HRG_MUB000601_T005300_dT1.dat", "r");
+	FILE *FilePressHRG = fopen("EOS_tables/Press_HRG_MUB000601_T005300_dT1.dat", "r");
 	if (FilePressHRG == 0){
 	    fprintf(stderr, "failed to open HRG Pressure \n");
 	    exit(1);
