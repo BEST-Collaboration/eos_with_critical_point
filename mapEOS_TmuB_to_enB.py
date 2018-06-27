@@ -77,8 +77,8 @@ ed_table = ed_table[:, 2].reshape(n_T, n_muB)*(T_table**4.)/(hbarC**3.)
 nB_table = nB_table[:, 2].reshape(n_T, n_muB)*(T_table**3.)/(hbarC**3.)
 P_table  = P_table[:, 2].reshape(n_T, n_muB)*(T_table**4.)/(hbarC**3.)
 
-print(matrix(ed_table).min(), matrix(ed_table).max())
-print(matrix(nB_table).min(), matrix(nB_table).max())
+print("e_min = %.5e GeV/fm^3, e_max = %.5e GeV/fm^3" % (matrix(ed_table).min(), matrix(ed_table).max()))
+print("nB_min = %.5e 1/fm^3, nB_max = %.5e 1/fm^3" % (matrix(nB_table).min(), matrix(nB_table).max()))
 
 #ed_local = 1.0
 #nB_local = 5.0
