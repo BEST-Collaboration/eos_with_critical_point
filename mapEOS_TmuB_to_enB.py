@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright Chun Shen @ 2018
 
 from numpy import *
 import sys
@@ -87,10 +88,10 @@ print(matrix(nB_table).min(), matrix(nB_table).max())
 #print(ed_local, nB_local, P_local, T_local, muB_local, s_local, (ed_local + P_local)/T_local)
 
 
-ed_bounds = [0.0, 0.0036, 0.015, 0.045, 0.455, 20.355, 219.355, 650]
-ne_list   = [13, 20, 31, 42, 200, 200, 200]
-nB_bounds = [0.00499, 0.01495, 0.04475, 0.498, 3.49, 12.45, 12.45]
-nnB_list  = [500, 300, 180, 250, 349, 249, 249]
+ed_bounds = [0.0, 0.0036, 0.015, 0.045, 0.455, 20.355, 650.]
+ne_list   = [13, 20, 31, 42, 200, 400]
+nB_bounds = [0.005, 0.015, 0.045, 0.5, 3.5, 12.0]
+nnB_list  = [501, 301, 181, 251, 351, 251]
 
 # generate tables
 for itable in range(len(ne_list)):
