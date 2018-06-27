@@ -33,10 +33,15 @@ def inverse_mapping_2D(x, y, xt, yt, z1, z2, z3):
         z1_cut[iy] = z1_1 + (z1_2 - z1_1)/(x_2 - x_1)*(x - x_1)
         z2_cut[iy] = z2_1 + (z2_2 - z2_1)/(x_2 - x_1)*(x - x_1)
         z3_cut[iy] = z3_1 + (z3_2 - z3_1)/(x_2 - x_1)*(x - x_1)
-    idx_y = min(ny - 2, max(0, searchsorted(y_cut, y, side='left') - 1))
-    z1_interp = z1_cut[idx_y] + (z1_cut[idx_y + 1] - z1_cut[idx_y])/(y_cut[idx_y + 1] - y_cut[idx_y])*(y - y_cut[idx_y])
-    z2_interp = z2_cut[idx_y] + (z2_cut[idx_y + 1] - z2_cut[idx_y])/(y_cut[idx_y + 1] - y_cut[idx_y])*(y - y_cut[idx_y])
-    z3_interp = z3_cut[idx_y] + (z3_cut[idx_y + 1] - z3_cut[idx_y])/(y_cut[idx_y + 1] - y_cut[idx_y])*(y - y_cut[idx_y])
+    if y > y_cut[-1]:
+        z1_interp = z1_cut[-1]
+        z2_interp = z2_cut[-1]
+        z3_interp = z3_cut[-1]
+    else:
+        idx_y = min(ny - 2, max(0, searchsorted(y_cut, y, side='left') - 1))
+        z1_interp = z1_cut[idx_y] + (z1_cut[idx_y + 1] - z1_cut[idx_y])/(y_cut[idx_y + 1] - y_cut[idx_y])*(y - y_cut[idx_y])
+        z2_interp = z2_cut[idx_y] + (z2_cut[idx_y + 1] - z2_cut[idx_y])/(y_cut[idx_y + 1] - y_cut[idx_y])*(y - y_cut[idx_y])
+        z3_interp = z3_cut[idx_y] + (z3_cut[idx_y + 1] - z3_cut[idx_y])/(y_cut[idx_y + 1] - y_cut[idx_y])*(y - y_cut[idx_y])
     z1_interp = max(0., z1_interp)
     z2_interp = max(0., z2_interp)
     z3_interp = max(0., z3_interp)
@@ -74,22 +79,37 @@ P_table  = P_table[:, 2].reshape(n_T, n_muB)*(T_table**4.)/(hbarC**3.)
 print(matrix(ed_table).min(), matrix(ed_table).max())
 print(matrix(nB_table).min(), matrix(nB_table).max())
 
-plt.figure()
-plt.contourf(muB_table.transpose(), T_table.transpose(), ed_table.transpose(), 50)
-plt.show()
+#ed_local = 1.0
+#nB_local = 5.0
+#P_local, T_local, muB_local = inverse_mapping_2D(
+#    ed_local, nB_local, ed_table, nB_table, P_table, T_table, muB_table)
+#s_local = (ed_local + P_local - muB_local*nB_local)/T_local
+#print(ed_local, nB_local, P_local, T_local, muB_local, s_local, (ed_local + P_local)/T_local)
 
-plt.figure()
-plt.contourf(muB_table.transpose(), T_table.transpose(), nB_table.transpose(), 50)
-plt.show()
 
-ed_list = linspace(2e-5, 650, 500)
-nB_list = linspace(0.0, 11.5, 500)
+ed_bounds = [0.0, 0.0036, 0.015, 0.045, 0.455, 20.355, 219.355, 650]
+ne_list   = [13, 20, 31, 42, 200, 200, 200]
+nB_bounds = [0.00499, 0.01495, 0.04475, 0.498, 3.49, 12.45, 12.45]
+nnB_list  = [500, 300, 180, 250, 349, 249, 249]
 
-for ie in range(len(ed_list)):
-    ed_local = ed_list[ie]
-    for inB in range(len(nB_list)):
-        nB_local = nB_list[inB]
-        P_local, T_local, muB_local = inverse_mapping_2D(
-            ed_local, nB_local, ed_table, nB_table, P_table, T_table, muB_table)
-
-        print(ed_local, nB_local, P_local, T_local, muB_local)
+# generate tables
+for itable in range(len(ne_list)):
+    print("Generating table %d ... " % itable)
+    ed_list = linspace(ed_bounds[itable], ed_bounds[itable+1], ne_list[itable])
+    nB_list = linspace(0.0, nB_bounds[itable], nnB_list[itable])
+    p_list = zeros([len(ed_list), len(nB_list)])
+    T_list = zeros([len(ed_list), len(nB_list)])
+    muB_list = zeros([len(ed_list), len(nB_list)])
+    
+    for ie in range(len(ed_list)):
+        ed_local = ed_list[ie]
+        for inB in range(len(nB_list)):
+            nB_local = nB_list[inB]
+            P_local, T_local, muB_local = inverse_mapping_2D(
+                ed_local, nB_local, ed_table, nB_table, P_table, T_table, muB_table)
+            p_list[ie, inB] = P_local
+            T_list[ie, inB] = T_local
+            muB_list[ie, inB] = muB_local
+    savetxt("BEST_eos_p_%d.dat" % itable, p_list, fmt='%.8e', delimiter="  ")
+    savetxt("BEST_eos_T_%d.dat" % itable, T_list, fmt='%.8e', delimiter="  ")
+    savetxt("BEST_eos_muB_%d.dat" % itable, muB_list, fmt='%.8e', delimiter="  ")
