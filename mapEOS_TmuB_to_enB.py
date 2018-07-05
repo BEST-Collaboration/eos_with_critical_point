@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#/usr/bin/env python3
 # Copyright Chun Shen @ 2018
 
 from numpy import *
@@ -57,14 +57,17 @@ def binary_search_1d(ed_local, muB_local):
     else:
         T_mid = (T_max + T_min)/2.
         e_mid = f_e(muB_local, T_mid)
-        while ((T_max - T_min) > ACCURACY
-                and abs(e_mid - ed_local) > ACCURACY):
+        abs_err = abs(e_mid - ed_local)
+        rel_err = abs_err/abs(e_mid + ed_local + 1e-15)
+        while (rel_err > ACCURACY and abs_err > ACCURACY*1e-2):
             if (ed_local < e_mid):
                 T_max = T_mid
             else:
                 T_min = T_mid
             T_mid = (T_max + T_min)/2.
             e_mid = f_e(muB_local, T_mid)
+            abs_err = abs(e_mid - ed_local)
+            rel_err = abs_err/abs(e_mid + ed_local + 1e-15)
         return(T_mid)
 
 def binary_search_2d(ed_local, nB_local):
@@ -81,8 +84,9 @@ def binary_search_2d(ed_local, nB_local):
         muB_mid = (muB_min + muB_max)/2.
         T_mid = binary_search_1d(ed_local, muB_mid)
         nB_mid = f_nB(muB_mid, T_mid)
-        while ((muB_max - muB_min) > ACCURACY
-                and abs(nB_mid - nB_local) > ACCURACY):
+        abs_err = abs(nB_mid - nB_local)
+        rel_err = abs_err/abs(nB_mid + nB_local + 1e-15)
+        while (rel_err > ACCURACY and abs_err > ACCURACY*1e-2):
             if (nB_local < nB_mid):
                 muB_max = muB_mid
             else:
@@ -90,6 +94,8 @@ def binary_search_2d(ed_local, nB_local):
             muB_mid = (muB_max + muB_min)/2.
             T_mid = binary_search_1d(ed_local, muB_mid)
             nB_mid = f_nB(muB_mid, T_mid)
+            abs_err = abs(nB_mid - nB_local)
+            rel_err = abs_err/abs(nB_mid + nB_local)
         return(T_mid, muB_min)
 
 #T_local, muB_local = binary_search_2d(1.0, 0.02)
