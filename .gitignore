@@ -3,3 +3,4 @@
 *.txt
 *.swp
 Files_*/*
+.DS_Store
