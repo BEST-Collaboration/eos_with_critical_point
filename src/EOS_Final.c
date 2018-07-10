@@ -530,7 +530,7 @@ int main(void)
 	    for(j=0;j<=599; j++){
 		    Tval = (double) i;
 		    muBval = (double) j;
-    		Targum = (Tval - (TC - 23.0 - tan(angle1)*(muBval-muBC)))/deltaT;
+    		Targum = (Tval - (T0 + kappa/T0*muBval*muBval - 23.0))/deltaT;
 
     		if(Targum >= 4.5)    	PressTotHRGMat[i][j] = PressTotMat[i][j];
     		if(Targum <= -4.5)      PressTotHRGMat[i][j] = PressHRGMat[i][j];
@@ -541,15 +541,15 @@ int main(void)
     		if(Targum <= -4.5)      dPressTotHRGdTMat[i][j] = dPressHRGdTMat[i][j];
     		else                    dPressTotHRGdTMat[i][j] = dPressTotdTMat[i][j]*0.5*(1.0 + tanh(Targum))
                                             + dPressHRGdTMat[i][j]*0.5*(1.0 - tanh(Targum))
-                                        	+ PressTotMat[i][j]*0.5/deltaT*1.0/pow(cosh(Targum),2)
-                                        	- PressHRGMat[i][j]*0.5/deltaT*1.0/pow(cosh(Targum),2);       
+                                        	- PressTotMat[i][j]*0.5/deltaT*1.0/pow(cosh(Targum),2)
+                                        	+ PressHRGMat[i][j]*0.5/deltaT*1.0/pow(cosh(Targum),2);       
 
             if(Targum >= 4.5)       dPressTotHRGdmuBMat[i][j] = dPressTotdmuBMat[i][j];
    			if(Targum <= -4.5)      dPressTotHRGdmuBMat[i][j] = dPressHRGdmuBMat[i][j];
     		else                    dPressTotHRGdmuBMat[i][j] = dPressTotdmuBMat[i][j]*0.5*(1.0 + tanh(Targum))
                                             + dPressHRGdmuBMat[i][j]*0.5*(1.0 - tanh(Targum))
-                                        	+ PressTotMat[i][j]*0.5/deltaT*tan(angle1)/pow(cosh(Targum),2)
-                                        	- PressHRGMat[i][j]*0.5/deltaT*tan(angle1)/pow(cosh(Targum),2);
+                                        	- PressTotMat[i][j]*0.5/pow(cosh(Targum),2)*(2*kappa/T0*muBval)/deltaT
+                                        	+ PressHRGMat[i][j]*0.5/pow(cosh(Targum),2)*(2*kappa/T0*muBval)/deltaT;
 
             if(Targum >= 4.5)       d2PressTotHRGdT2Mat[i][j] = d2PressTotdT2Mat[i][j];
     		if(Targum <= -4.5)      d2PressTotHRGdT2Mat[i][j] = d2PressHRGdT2Mat[i][j];
@@ -557,17 +557,23 @@ int main(void)
                                             + d2PressHRGdT2Mat[i][j]*0.5*(1.0 - tanh(Targum))
                                 	        + dPressTotdTMat[i][j]/deltaT*1.0/pow(cosh(Targum),2)
                                         	- dPressHRGdTMat[i][j]/deltaT*1.0/pow(cosh(Targum),2)
-                                        	- PressTotMat[i][j]/pow(deltaT,2)*sinh(Targum)/pow(cosh(Targum),3)
-                                        	+ PressHRGMat[i][j]/pow(deltaT,2)*sinh(Targum)/pow(cosh(Targum),3);   
+                                        	- PressTotMat[i][j]/pow(cosh(Targum),2)*tanh(Targum)/pow(deltaT,2) 
+                                        	+ PressHRGMat[i][j]/pow(cosh(Targum),2)*tanh(Targum)/pow(deltaT,2);   
 
             if(Targum >= 4.5)       d2PressTotHRGdmuB2Mat[i][j] = d2PressTotdmuB2Mat[i][j];
     		if(Targum <= -4.5)      d2PressTotHRGdmuB2Mat[i][j] = d2PressHRGdmuB2Mat[i][j];
     		else                    d2PressTotHRGdmuB2Mat[i][j] = d2PressTotdmuB2Mat[i][j]*0.5*(1.0 + tanh(Targum))
                                             + d2PressHRGdmuB2Mat[i][j]*0.5*(1.0 - tanh(Targum))
-                                	        + dPressTotdmuBMat[i][j]/deltaT*tan(angle1)/pow(cosh(Targum),2)
-                                        	- dPressHRGdmuBMat[i][j]/deltaT*tan(angle1)/pow(cosh(Targum),2)
-                                        	- PressTotMat[i][j]*pow(tan(angle1)/deltaT,2)*sinh(Targum)/pow(cosh(Targum),3)
-                                        	+ PressHRGMat[i][j]*pow(tan(angle1)/deltaT,2)*sinh(Targum)/pow(cosh(Targum),3);
+                                	        - dPressTotdmuBMat[i][j]/pow(cosh(Targum),2)*(2*kappa/T0*muBval)/deltaT
+                                        	+ dPressHRGdmuBMat[i][j]/pow(cosh(Targum),2)*(2*kappa/T0*muBval)/deltaT
+                                        	- PressTotMat[i][j]/pow(cosh(Targum),2)*(2*tanh(Targum)
+                                        		*(2*kappa/T0*muBval)/deltaT
+                                        		*(2*kappa/T0*muBval)/deltaT
+                                        		+ 2*kappa/T0/deltaT)
+                                        	+ PressHRGMat[i][j]/pow(cosh(Targum),2)*(2*tanh(Targum)
+                                        		*(2*kappa/T0*muBval)/deltaT
+                                        		*(2*kappa/T0*muBval)/deltaT
+                                        		+ 2*kappa/T0/deltaT);
 
             if(Targum >= 4.5)       d2PressTotHRGdTdmuBMat[i][j] = d2PressTotdTdmuBMat[i][j];
     		if(Targum <= -4.5)      d2PressTotHRGdTdmuBMat[i][j] = d2PressHRGdTdmuBMat[i][j];
@@ -575,10 +581,12 @@ int main(void)
                                             + d2PressHRGdTdmuBMat[i][j]*0.5*(1.0 - tanh(Targum))
                                         	+ dPressTotdmuBMat[i][j]*0.5/deltaT*1.0/pow(cosh(Targum),2)
                                         	- dPressHRGdmuBMat[i][j]*0.5/deltaT*1.0/pow(cosh(Targum),2) 
-                             	            + dPressTotdTMat[i][j]*0.5/deltaT*tan(angle1)/pow(cosh(Targum),2)
-                                        	- dPressHRGdTMat[i][j]*0.5/deltaT*tan(angle1)/pow(cosh(Targum),2)
-                                        	- PressTotMat[i][j]/pow(deltaT,2)*tan(angle1)*sinh(Targum)/pow(cosh(Targum),3)
-                                        	+ PressHRGMat[i][j]/pow(deltaT,2)*tan(angle1)*sinh(Targum)/pow(cosh(Targum),3);    
+                             	            + dPressTotdTMat[i][j]*0.5/deltaT*(2*kappa/T0*muBval)/pow(cosh(Targum),2)
+                                        	- dPressHRGdTMat[i][j]*0.5/deltaT*(2*kappa/T0*muBval)/pow(cosh(Targum),2)
+                                        	+ PressTotMat[i][j]/pow(cosh(Targum),2)/pow(deltaT,2)
+                                        		*tanh(Targum)*(2*kappa/T0*muBval)
+                                        	- PressHRGMat[i][j]/pow(cosh(Targum),2)/pow(deltaT,2)
+                                        		*tanh(Targum)*(2*kappa/T0*muBval);    
 
        		//fprintf(FilePressTotHRG,"%3.16f	%3.1f	%12.16f \n", muBval, Tval, PressTotHRGMat[i][j]);
     		//fprintf(FiledPdTTotHRG,"%3.16f	%3.1f	%12.16f \n", muBval, Tval, dPressTotHRGdTMat[i][j]);
