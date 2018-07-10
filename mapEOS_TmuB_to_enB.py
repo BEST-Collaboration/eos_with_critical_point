@@ -16,6 +16,7 @@ except:
     exit(1)
 
 ACCURACY = 1e-6
+MAXITER  = 100
 hbarC    = 0.19733
 
 filename_string = EOS_table_folder.split("Files_")[1].split("/")[0]
@@ -47,6 +48,7 @@ f_e  = interpolate.interp2d(muB, T, ed_table, kind='cubic')
 f_nB = interpolate.interp2d(muB, T, nB_table, kind='cubic')
 
 def binary_search_1d(ed_local, muB_local):
+    iteration = 0
     T_min = 0.03; T_max = 0.80
     e_low = f_e(muB_local, T_min)
     e_up  = f_e(muB_local, T_max)
@@ -59,7 +61,8 @@ def binary_search_1d(ed_local, muB_local):
         e_mid = f_e(muB_local, T_mid)
         abs_err = abs(e_mid - ed_local)
         rel_err = abs_err/abs(e_mid + ed_local + 1e-15)
-        while (rel_err > ACCURACY and abs_err > ACCURACY*1e-2):
+        while (rel_err > ACCURACY and abs_err > ACCURACY*1e-2
+                and iteration < MAXITER):
             if (ed_local < e_mid):
                 T_max = T_mid
             else:
@@ -68,9 +71,11 @@ def binary_search_1d(ed_local, muB_local):
             e_mid = f_e(muB_local, T_mid)
             abs_err = abs(e_mid - ed_local)
             rel_err = abs_err/abs(e_mid + ed_local + 1e-15)
+            iteration += 1
         return(T_mid)
 
 def binary_search_2d(ed_local, nB_local):
+    iteration = 0
     muB_min = 0.0; muB_max = 0.45
     T_max = binary_search_1d(ed_local, muB_min)
     nB_min = f_nB(muB_min, T_max)
@@ -86,7 +91,8 @@ def binary_search_2d(ed_local, nB_local):
         nB_mid = f_nB(muB_mid, T_mid)
         abs_err = abs(nB_mid - nB_local)
         rel_err = abs_err/abs(nB_mid + nB_local + 1e-15)
-        while (rel_err > ACCURACY and abs_err > ACCURACY*1e-2):
+        while (rel_err > ACCURACY and abs_err > ACCURACY*1e-2
+                and iteration < MAXITER):
             if (nB_local < nB_mid):
                 muB_max = muB_mid
             else:
@@ -96,14 +102,15 @@ def binary_search_2d(ed_local, nB_local):
             nB_mid = f_nB(muB_mid, T_mid)
             abs_err = abs(nB_mid - nB_local)
             rel_err = abs_err/abs(nB_mid + nB_local)
+            iteration += 1
         return(T_mid, muB_min)
 
 #T_local, muB_local = binary_search_2d(1.0, 0.02)
 #print(T_local, muB_local, f_e(muB_local, T_local), f_nB(muB_local, T_local))
 
 ed_bounds = [0.0, 0.0036, 0.015, 0.045, 0.455, 20.355, 650.]
-ne_list   = [13, 20, 31, 42, 200, 400]
-nB_bounds = [0.005, 0.015, 0.045, 0.5, 3.5, 12.0]
+ne_list   = [61, 60, 61, 122, 200, 400]
+nB_bounds = [0.0025, 0.015, 0.045, 0.25, 3.5, 12.0]
 nnB_list  = [501, 301, 181, 251, 351, 251]
 
 # generate tables
