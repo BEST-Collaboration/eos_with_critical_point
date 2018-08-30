@@ -1,4 +1,5 @@
 Copyright (c) 2018.
+
 This file was created by Paolo Parotto and Debora Mroczek, Department of Physics, University of Houston, Houston, TX 77204, US.
 
 
@@ -62,17 +63,23 @@ NOTE ON THE FILE
 The public version of the code also contains the tables for the different thermodynamic quantities for the set of parameters included in the manuscript, as well as a different choice with w=0.75.
 
 COMPILING
-This code uses the standard libraries <stdio.h>, <stdlib.h>, <math.h>, <string.h>, <time.h>. In addition, the libraries sys/types.h, sys/stat.h and direct.h were included in order to use the functions _mkdir() and _chdir(). Please note that different systems might use the functions mkdir() and chdir() (no underscore), and these might be defined in other header files. Please note that the syntax should be changed if necessary where these functions are called (lines 219, 220, 465, 482).
+This code uses the standard libraries ``<stdio.h>, <stdlib.h>, <math.h>, <string.h>, <time.h>``. In addition, the libraries sys/types.h, sys/stat.h and direct.h were included in order to use the functions ``_mkdir()`` and ``_chdir()``. Please note that different systems might use the functions ``mkdir()`` and ``chdir()`` (no underscore), and these might be defined in other header files. Please note that the syntax should be changed if necessary where these functions are called (lines 219, 220, 465, 482).
 Please, do not hesitate to contact the authors for questions/problems.
 
 Standard: compile with
+
+``
 gcc -o (name of executable) *.c
+``
 or
+``
 gcc -lm -o (name of executable) *.c
+``
 
 Try also:
-gcc -l/usr/include -c *.c
-gcc -L/usr/lib/ *.o -lgsl -lgslcblas -lm -o EOS
+
+``gcc -l/usr/include -c *.c``
+``gcc -L/usr/lib/ *.o -lgsl -lgslcblas -lm -o EOS``
 
 NOTE: this is a beta version, for problems with compiling contact the authors.
 
